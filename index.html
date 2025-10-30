@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recicla Jumper - Jogo de Reciclagem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Recicla Jumper 🌍</h1>
+            <p>Colete todos os materiais recicláveis!</p>
+        </header>
+        
+        <div class="game-info">
+            <div class="score-display">
+                <span>Pontos: <span id="score">0</span></span>
+                <span>Materiais coletados: <span id="collected">0</span>/24</span>
+            </div>
+        </div>
+
+        <div id="deliveryMessage" class="delivery-message"></div>
+        
+        <div class="difficulty-select">
+            <h3>Dificuldade:</h3>
+            <select id="difficulty" onchange="changeDifficulty(event)">
+                <option value="easy">Fácil</option>
+                <option value="normal">Normal</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        
+        <div class="legend">
+            <h3>📋 Materiais Recicláveis:</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <span class="legend-emoji">🥫</span>
+                    <span class="legend-text">Lata</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-emoji">📄</span>
+                    <span class="legend-text">Papel</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-emoji">🥤</span>
+                    <span class="legend-text">Plástico</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-emoji">🍾</span>
+                    <span class="legend-text">Vidro</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-emoji">🔩</span>
+                    <span class="legend-text">Metal</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>Controles:</h3>
+            <p><strong>A</strong> ou <strong>←</strong> - Mover para esquerda</p>
+            <p><strong>D</strong> ou <strong>→</strong> - Mover para direita</p>
+            <p><strong>Espaço</strong> - Pular</p>
+        </div>
+
+        <footer class="footer">
+            <div>
+                ONG: <a href="https://www.instagram.com/reciclacapixaba/" target="_blank">@reciclacapixaba</a>
+                &nbsp;|&nbsp;
+                Projeto: <a href="https://www.instagram.com/proj.intfaesa?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">@proj.intfaesa</a>
+            </div>
+        </footer>
+        
+        <div id="gameOverScreen" class="game-over">
+            <div class="game-over-content">
+                <h2 id="gameOverTitle"></h2>
+                <p id="gameOverMessage"></p>
+                <button onclick="restartGame()">Jogar Novamente</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
