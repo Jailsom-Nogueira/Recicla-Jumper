@@ -5,7 +5,6 @@ const ctx = canvas.getContext('2d');
 // Variáveis do jogo
 let score = 0;
 let collectedItems = 0;
-const totalItems = 30; // 30 materiais disponíveis no mapa
 const minItemsToWin = 24; // Mínimo necessário para poder entregar e vencer
 let gameRunning = true;
 let cameraX = 0;
@@ -14,7 +13,6 @@ let deliveredItems = {}; // Materiais entregues nas lixeiras
 
 // Gravidade e física
 const gravity = 0.8;
-const friction = 0.85;
 const jumpPower = -15;
 const moveSpeed = 5;
 
