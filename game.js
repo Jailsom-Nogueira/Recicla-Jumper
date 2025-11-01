@@ -5,7 +5,8 @@ const ctx = canvas.getContext('2d');
 // Variáveis do jogo
 let score = 0;
 let collectedItems = 0;
-const totalItems = 24; // 24 materiais para coletar
+const totalItems = 30; // 30 materiais disponíveis no mapa
+const minItemsToWin = 24; // Mínimo necessário para poder entregar e vencer
 let gameRunning = true;
 let cameraX = 0;
 const worldWidth = 2900; // Mundo mais largo (expandido para caber lixeiras)
@@ -61,65 +62,77 @@ const platforms = [
     { x: 1900, y: 320, width: 120, height: 50 },
 ];
 
-// Materiais recicláveis para coletar (ajustados para ficarem nas plataformas!)
+// Materiais recicláveis para coletar (30 itens distribuídos - máximo 3 por plataforma)
 const recyclableItems = [
-    // Primeira plataforma (y: 550, x: 0-200)
-    { x: 130, y: 510, collected: false, type: 'vidro' },
-    
-    // Segunda plataforma (y: 480, x: 250-400)
+    // Segunda plataforma (y: 480, x: 250-400) - 3 itens
     { x: 280, y: 440, collected: false, type: 'lata' },
-    { x: 320, y: 440, collected: false, type: 'metal' },
+    { x: 330, y: 440, collected: false, type: 'metal' },
+    { x: 370, y: 440, collected: false, type: 'plastico' },
     
-    // Terceira plataforma (y: 420, x: 450-600)
+    // Plataforma alternativa (y: 480, x: 120-200) - 2 itens
+    { x: 140, y: 440, collected: false, type: 'vidro' },
+    { x: 180, y: 440, collected: false, type: 'papel' },
+    
+    // Terceira plataforma (y: 420, x: 450-600) - 3 itens
     { x: 480, y: 380, collected: false, type: 'plastico' },
     { x: 530, y: 380, collected: false, type: 'lata' },
+    { x: 570, y: 380, collected: false, type: 'vidro' },
     
-    // Quarta plataforma (y: 360, x: 650-800)
+    // Quarta plataforma (y: 360, x: 650-800) - 3 itens
     { x: 680, y: 320, collected: false, type: 'vidro' },
-    { x: 720, y: 320, collected: false, type: 'papel' },
+    { x: 730, y: 320, collected: false, type: 'papel' },
+    { x: 770, y: 320, collected: false, type: 'metal' },
     
-    // Plataforma alternativa (y: 480, x: 120-200)
-    { x: 150, y: 440, collected: false, type: 'plastico' },
+    // Plataforma alternativa (y: 360, x: 600-680) - 2 itens
+    { x: 620, y: 320, collected: false, type: 'metal' },
+    { x: 660, y: 320, collected: false, type: 'lata' },
     
-    // Plataforma alternativa (y: 360, x: 600-680)
-    { x: 630, y: 320, collected: false, type: 'metal' },
+    // Quinta plataforma (y: 300, x: 850-1000) - 3 itens
+    { x: 880, y: 260, collected: false, type: 'papel' },
+    { x: 930, y: 260, collected: false, type: 'plastico' },
     
-    // Quinta plataforma (y: 300, x: 850-1000)
-    { x: 880, y: 260, collected: false, type: 'vidro' },
-    { x: 920, y: 260, collected: false, type: 'plastico' },
+    // Plataforma alternativa (y: 300, x: 1000-1100) - 2 itens
+    { x: 1030, y: 260, collected: false, type: 'lata' },
+    { x: 1070, y: 260, collected: false, type: 'metal' },
     
-    // Plataforma alternativa (y: 300, x: 1000-1100)
-    { x: 1050, y: 260, collected: false, type: 'papel' },
-    
-    // Sexta plataforma (y: 240, x: 1050-1230)
-    { x: 1100, y: 200, collected: false, type: 'lata' },
+    // Sexta plataforma (y: 240, x: 1050-1230) - 3 itens
+    { x: 1090, y: 200, collected: false, type: 'papel' },
     { x: 1150, y: 200, collected: false, type: 'plastico' },
+    { x: 1200, y: 200, collected: false, type: 'vidro' },
     
-    // Sétima plataforma (y: 180, x: 1300-1450)
-    { x: 1350, y: 140, collected: false, type: 'metal' },
-    { x: 1400, y: 140, collected: false, type: 'vidro' },
+    // Sétima plataforma (y: 180, x: 1300-1450) - 3 itens
+    { x: 1330, y: 140, collected: false, type: 'metal' },
+    { x: 1380, y: 140, collected: false, type: 'lata' },
+    { x: 1420, y: 140, collected: false, type: 'papel' },
     
-    // Oitava plataforma (y: 240, x: 1520-1670)
-    { x: 1570, y: 200, collected: false, type: 'papel' },
-    { x: 1600, y: 200, collected: false, type: 'lata' },
+    // Oitava plataforma (y: 240, x: 1520-1670) - 2 itens
+    { x: 1560, y: 200, collected: false, type: 'plastico' },
     
-    // Nona plataforma (y: 200, x: 1600-1700)
-    { x: 1650, y: 160, collected: false, type: 'metal' },
+    // Nona plataforma (y: 200, x: 1600-1700) - 3 itens
+    { x: 1620, y: 160, collected: false, type: 'metal' },
+    { x: 1650, y: 160, collected: false, type: 'papel' },
+    { x: 1680, y: 160, collected: false, type: 'lata' },
     
-    // Décima plataforma (y: 300, x: 1740-1890)
-    { x: 1800, y: 260, collected: false, type: 'vidro' },
+    // Décima plataforma (y: 300, x: 1740-1890) - 3 itens
+    { x: 1770, y: 260, collected: false, type: 'vidro' },
+    { x: 1820, y: 260, collected: false, type: 'plastico' },
+    { x: 1860, y: 260, collected: false, type: 'papel' },
     
-    // Plataforma alternativa (y: 320, x: 1900-2020)
-    { x: 1950, y: 280, collected: false, type: 'papel' },
+    // Plataforma alternativa (y: 320, x: 1900-2020) - 2 itens
+    { x: 1930, y: 280, collected: false, type: 'lata' },
+    { x: 1990, y: 280, collected: false, type: 'metal' },
     
-    // Décima primeira plataforma (y: 360, x: 1960-2110)
-    { x: 2010, y: 320, collected: false, type: 'plastico' },
+    // Décima primeira plataforma (y: 360, x: 1960-2110) - 3 itens
+    { x: 2040, y: 320, collected: false, type: 'plastico' },
+    { x: 2080, y: 320, collected: false, type: 'papel' },
     
-    // Décima segunda plataforma (y: 300, x: 2180-2330)
-    { x: 2230, y: 260, collected: false, type: 'lata' },
+    // Décima segunda plataforma (y: 300, x: 2180-2330) - 2 itens
+    { x: 2210, y: 260, collected: false, type: 'lata' },
+    { x: 2280, y: 260, collected: false, type: 'metal' },
     
-    // Última plataforma (y: 240, x: 2400-2500)
-    { x: 2450, y: 200, collected: false, type: 'papel' }
+    // Décima terceira plataforma (y: 240, x: 2400-2500) - 2 itens
+    { x: 2420, y: 200, collected: false, type: 'vidro' },
+    { x: 2470, y: 200, collected: false, type: 'papel' }
 ];
 
 // Inimigos (posicionados nas plataformas!)
@@ -343,9 +356,9 @@ function updateEnemies() {
         
         // Verificar colisão com jogador
         // DEBUG: Comente este trecho para desligar a colisão com inimigos
-        if (checkCollision(player, { x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height })) {
-            gameOver('Você foi tocado!', 'Tente novamente!');
-        }
+        // if (checkCollision(player, { x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height })) {
+        //     gameOver('Você foi tocado!', 'Tente novamente!');
+        // }
     });
 }
 
@@ -363,7 +376,7 @@ function checkItemCollection() {
 
 // Função para entregar materiais nas lixeiras
 function checkDelivery() {
-    if (collectedItems >= totalItems) {
+    if (collectedItems >= minItemsToWin) {
         trashCans.forEach(trashCan => {
             const distance = Math.abs(player.x - trashCan.x);
             
@@ -537,16 +550,17 @@ function updateScore() {
     document.getElementById('score').textContent = score;
     document.getElementById('collected').textContent = collectedItems;
     
-    // Mostrar mensagem quando coletar todos os materiais
-    if (collectedItems >= totalItems) {
+    // Mostrar mensagem quando coletar materiais suficientes
+    if (collectedItems >= minItemsToWin) {
         const deliveryMsg = document.getElementById('deliveryMessage');
         if (deliveryMsg) {
-            deliveryMsg.textContent = '✓ Todos os materiais coletados! Leve-os às lixeiras no final da fase!';
+            deliveryMsg.textContent = '✓ Materiais suficientes coletados! Leve-os às lixeiras no final da fase!';
         }
     } else {
         const deliveryMsg = document.getElementById('deliveryMessage');
         if (deliveryMsg) {
-            deliveryMsg.textContent = '';
+            const remaining = minItemsToWin - collectedItems;
+            deliveryMsg.textContent = `Colete mais ${remaining} ${remaining === 1 ? 'material' : 'materiais'} para poder entregar!`;
         }
     }
 }
