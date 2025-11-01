@@ -88,6 +88,7 @@ const recyclableItems = [
     // Quinta plataforma (y: 300, x: 850-1000) - 3 itens
     { x: 880, y: 260, collected: false, type: 'papel' },
     { x: 930, y: 260, collected: false, type: 'plastico' },
+    { x: 970, y: 260, collected: false, type: 'vidro' },
     
     // Plataforma alternativa (y: 300, x: 1000-1100) - 2 itens
     { x: 1030, y: 260, collected: false, type: 'lata' },
@@ -105,6 +106,7 @@ const recyclableItems = [
     
     // Oitava plataforma (y: 240, x: 1520-1670) - 2 itens
     { x: 1560, y: 200, collected: false, type: 'plastico' },
+    { x: 1630, y: 200, collected: false, type: 'vidro' },
     
     // Nona plataforma (y: 200, x: 1600-1700) - 3 itens
     { x: 1620, y: 160, collected: false, type: 'metal' },
@@ -121,6 +123,7 @@ const recyclableItems = [
     { x: 1990, y: 280, collected: false, type: 'metal' },
     
     // Décima primeira plataforma (y: 360, x: 1960-2110) - 3 itens
+    { x: 1990, y: 320, collected: false, type: 'vidro' },
     { x: 2040, y: 320, collected: false, type: 'plastico' },
     { x: 2080, y: 320, collected: false, type: 'papel' },
     
@@ -310,7 +313,10 @@ function updatePlayer() {
 
 // Função para atualizar inimigos
 function updateEnemies() {
-    enemies.forEach(enemy => {
+    enemies.forEach((enemy, index) => {
+        // Pular inimigos que já foram derrotados
+        if (enemy.defeated) return;
+        
         enemy.x += enemy.speed * enemy.direction;
         
         // Encontrar a plataforma onde o inimigo está
@@ -353,10 +359,29 @@ function updateEnemies() {
         }
         
         // Verificar colisão com jogador
-        // DEBUG: Comente este trecho para desligar a colisão com inimigos
-        // if (checkCollision(player, { x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height })) {
-        //     gameOver('Você foi tocado!', 'Tente novamente!');
-        // }
+        if (checkCollision(player, { x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height })) {
+            // Verificar se o jogador está caindo em cima do inimigo
+            const playerBottom = player.y + player.height;
+            const enemyTop = enemy.y;
+            const playerCenterX = player.x + player.width / 2;
+            const enemyCenterX = enemy.x + enemy.width / 2;
+            
+            // Se o jogador está caindo (velocidade Y positiva) e acertou o topo do inimigo
+            if (player.speedY > 0 && playerBottom <= enemyTop + 15 && 
+                Math.abs(playerCenterX - enemyCenterX) < enemy.width * 0.8) {
+                // Derrotar inimigo
+                enemy.defeated = true;
+                score += 200; // Pontos por derrotar inimigo
+                updateScore();
+                
+                // Fazer jogador pular após derrotar inimigo
+                player.speedY = -10;
+                player.jumping = true;
+            } else {
+                // Colisão lateral - game over
+                gameOver('Você foi tocado!', 'Tente novamente!');
+            }
+        }
     });
 }
 
@@ -520,6 +545,9 @@ function drawTrashCans() {
 // Função para desenhar inimigos
 function drawEnemies() {
     enemies.forEach(enemy => {
+        // Não desenhar inimigos derrotados
+        if (enemy.defeated) return;
+        
         const screenX = enemy.x - cameraX;
         const screenY = enemy.y;
         
