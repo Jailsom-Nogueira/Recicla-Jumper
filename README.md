@@ -5,6 +5,12 @@
 
 ---
 
+## Onde posso jogar?
+
+- [Jogue à vontade aqui](https://jailsom-nogueira.github.io/Recicla-Jumper/)
+
+---
+
 ## Sobre o Projeto
 
 Pequeno jogo criado para apoiar uma ação beneficente para a ONG Recicla Capixaba.
@@ -47,3 +53,4 @@ Pequeno jogo criado para apoiar uma ação beneficente para a ONG Recicla Capixa
 ---
 
 Se divirta, compartilhe e apoie a reciclagem! 🌍♻️
+
